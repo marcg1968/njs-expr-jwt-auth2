@@ -1,0 +1,20 @@
+# Dependencies - Too large to track; use 'npm install' to recreate
+node_modules/
+
+# Environment Variables - Contains secrets like API keys or DB passwords
+.env
+.env.local
+
+# Logs - Useful for local debugging but not for production
+logs
+*.log
+npm-debug.log*
+
+# Build directories - If using TypeScript or a bundler
+dist/
+build/
+.cache/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
