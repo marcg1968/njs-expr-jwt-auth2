@@ -2,7 +2,8 @@ const User = require('../model/User')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-const handleLogin = async (req, res) => {
+// const handleLogin = async (req, res) => {
+const handleLogin = async (req, res, next) => {
     const { user, pwd } = req.body
     if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' })
 
@@ -57,6 +58,9 @@ const handleLogin = async (req, res) => {
     else {
         res.sendStatus(401)
     }
+
+    console.log(61, `*** MARKER ***`)
+    next()
 }
 
-module.exports = { handleLogin };
+module.exports = { handleLogin }
