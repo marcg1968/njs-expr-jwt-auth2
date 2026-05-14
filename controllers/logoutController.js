@@ -5,24 +5,27 @@ import jwt from 'jsonwebtoken'
 import { User } from '../model/User.js'
 
 export const handleLogout = async (req, res) => {
-    // On client, also delete the accessToken
 
-    const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(204); //No content
-    const refreshToken = cookies.jwt;
+    /* NB: on client: also delete the accessToken */
 
-    // Is refreshToken in db?
-    const foundUser = await User.findOne({ refreshToken }).exec();
+    console.log(11, req.cookies)
+
+    const cookies = req.cookies
+    if (!cookies?.jwt) return res.sendStatus(204) /* no content */
+    const refreshToken = cookies.jwt
+
+    /* is refreshToken in db? */
+    const foundUser = await User.findOne({ refreshToken }).exec()
     if (!foundUser) {
-        res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-        return res.sendStatus(204);
+        res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
+        return res.sendStatus(204)
     }
 
-    // Delete refreshToken in db
-    foundUser.refreshToken = '';
-    const result = await foundUser.save();
-    console.log(result);
+    /* delete refreshToken in db */
+    foundUser.refreshToken = ''
+    const result = await foundUser.save()
+    console.log(25, result)
 
-    res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-    res.sendStatus(204);
+    res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
+    res.sendStatus(204)
 }
