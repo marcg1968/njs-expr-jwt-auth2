@@ -15,13 +15,25 @@ const MONGO_URI = MONGODB_USER && MONGODB_PASS
     : null
 // console.log(22, {MONGO_URI})
 
+// export const connectDB = async () => {
+//     try {
+//         await mongoose.connect(MONGO_URI, {
+//             useUnifiedTopology: true,
+//             useNewUrlParser: true
+//         })
+//     } catch (err) {
+//         console.error(err)
+//     }
+// }
+
+mongoose.set('strictQuery', false)
+
 export const connectDB = async () => {
     try {
-        await mongoose.connect(MONGO_URI, {
-            useUnifiedTopology: true,
-            useNewUrlParser: true
-        })
+        await mongoose.connect(MONGO_URI)
+        console.log(`MongoDB on '${MONGODB_HOST}' as '${MONGODB_USER}' connected`)
     } catch (err) {
-        console.error(err)
+        console.error(err.message)
+        process.exit(1)
     }
 }

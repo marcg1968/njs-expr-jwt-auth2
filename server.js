@@ -9,7 +9,6 @@ import path from 'path'
 import { connectDB }  from './config/dbConn.js'
 import { logger } from './middleware/logEvents.js'
 import { corsOptions } from './config/corsOptions.js'
-// const errorHandler = require('./middleware/errorHandler')
 import { authRouter } from './routes/auth.js'
 import { rootRouter } from './routes/root.js'
 import { credentials } from './middleware/credentials.js'
@@ -20,63 +19,63 @@ import { logoutRouter } from './routes/logout.js'
 import { employeesRouter } from './routes/api/employees.js'
 import { usersRouter } from './routes/api/users.js'
 import { errorHandler } from './middleware/errorHandler.js'
+import { catchall } from './middleware/catchall.js'
 
 const { dirname: __dirname } = import.meta
 
 const PORT = process.env.PORT || 3500
 
-// Connect to MongoDB
-connectDB()
+const main = async () => {
 
-const app = express()
+    await connectDB()
 
-// custom middleware logger
-app.use(logger)
+    const app = express()
 
-// Handle options credentials check - before CORS!
-// and fetch cookies credentials requirement
-app.use(credentials)
+    /* custom middleware logger */
+    app.use(logger)
 
-// Cross Origin Resource Sharing
-app.use(cors(corsOptions))
+    /* handle options credentials check - before CORS! */
+    /* and fetch cookies credentials requirement */
+    app.use(credentials)
 
-// built-in middleware to handle urlencoded form data
-app.use(express.urlencoded({ extended: false }))
+    app.use(cors(corsOptions))
 
-// built-in middleware for json 
-app.use(express.json())
+    /* built-in middleware to handle urlencoded form data */
+    app.use(express.urlencoded({ extended: false }))
 
-//middleware for cookies
-app.use(cookieParser())
+    /* built-in middleware for JSON */
+    /* needed to access POST params in JSON content */
+    app.use(express.json())
 
-// // serve static files
-app.use('/', express.static(path.join(__dirname, '/public')))
+    /* middleware for cookies */
+    app.use(cookieParser())
 
-// routes
-app.use('/', rootRouter)
-app.use('/register', registerRouter)
-app.use('/auth', authRouter)
-app.use('/refresh', refreshRouter)
-app.use('/logout', logoutRouter)
+    /* routes */
+    app.use('/', rootRouter)
+    app.use('/register', registerRouter)
+    app.use('/auth', authRouter)
+    app.use('/refresh', refreshRouter)
+    app.use('/logout', logoutRouter)
+    app.use(verifyJWT)
+    app.use('/employees', employeesRouter)
+    app.use('/users', usersRouter)
 
-app.use(verifyJWT)
-app.use('/employees', employeesRouter)
-app.use('/users', usersRouter)
+    // app.all('*', (req, res) => {
+    //     res.status(404)
+    //     if (req.accepts('html')) {
+    //         res.sendFile(path.join(__dirname, 'views', '404.html'))
+    //     } else if (req.accepts('json')) {
+    //         res.json({ "error": "404 Not Found" })
+    //     } else {
+    //         res.type('txt').send("404 Not Found")
+    //     }
+    // })
 
-app.all('*', (req, res) => {
-    res.status(404)
-    if (req.accepts('html')) {
-        res.sendFile(path.join(__dirname, 'views', '404.html'))
-    } else if (req.accepts('json')) {
-        res.json({ "error": "404 Not Found" })
-    } else {
-        res.type('txt').send("404 Not Found")
-    }
-})
+    app.all('*', catchall)
 
-app.use(errorHandler)
+    app.use(errorHandler)
 
-mongoose.connection.once('open', () => {
-    console.log('Connected to MongoDB')
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
-})
+    app.listen(PORT, () => console.log(`Express.JS server is active on http://localhost:${PORT}`))
+}
+
+main().catch(err => console.log(err))
