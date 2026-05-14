@@ -1,7 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const registerController = require('../controllers/registerController');
 
-router.post('/', registerController.handleNewUser);
 
-module.exports = router;
+import express from 'express'
+import path from 'path'
+import { handleNewUser } from '../controllers/registerController.js'
+
+// const { dirname: __dirname } = import.meta
+
+const router = express.Router()
+
+router.post('/', handleNewUser)
+
+export const registerRouter = router

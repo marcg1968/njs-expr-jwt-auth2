@@ -1,20 +1,34 @@
-require('dotenv').config()
-const express = require('express')
-const app = express()
-const path = require('path')
-const cors = require('cors')
-const corsOptions = require('./config/corsOptions')
-const { logger } = require('./middleware/logEvents')
-const errorHandler = require('./middleware/errorHandler')
-const verifyJWT = require('./middleware/verifyJWT')
-const cookieParser = require('cookie-parser')
-const credentials = require('./middleware/credentials')
-const mongoose = require('mongoose')
-const connectDB = require('./config/dbConn')
+
+
+import 'dotenv/config'
+import express from 'express'
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import mongoose from 'mongoose'
+import path from 'path'
+import { connectDB }  from './config/dbConn.js'
+import { logger } from './middleware/logEvents.js'
+import { corsOptions } from './config/corsOptions.js'
+// const errorHandler = require('./middleware/errorHandler')
+import { authRouter } from './routes/auth.js'
+import { rootRouter } from './routes/root.js'
+import { credentials } from './middleware/credentials.js'
+import { verifyJWT } from './middleware/verifyJWT.js'
+import { registerRouter } from './routes/register.js'
+import { refreshRouter } from './routes/refresh.js'
+import { logoutRouter } from './routes/logout.js'
+import { employeesRouter } from './routes/api/employees.js'
+import { usersRouter } from './routes/api/users.js'
+import { errorHandler } from './middleware/errorHandler.js'
+
+const { dirname: __dirname } = import.meta
+
 const PORT = process.env.PORT || 3500
 
 // Connect to MongoDB
 connectDB()
+
+const app = express()
 
 // custom middleware logger
 app.use(logger)
@@ -35,19 +49,20 @@ app.use(express.json())
 //middleware for cookies
 app.use(cookieParser())
 
-//serve static files
+// // serve static files
 app.use('/', express.static(path.join(__dirname, '/public')))
 
 // routes
-app.use('/', require('./routes/root'))
-app.use('/register', require('./routes/register'))
-app.use('/auth', require('./routes/auth'))
-app.use('/refresh', require('./routes/refresh'))
-app.use('/logout', require('./routes/logout'))
+// app.use('/', require('./routes/root'))
+app.use('/', rootRouter)
+app.use('/register', registerRouter)
+app.use('/auth', authRouter)
+app.use('/refresh', refreshRouter)
+app.use('/logout', logoutRouter)
 
 app.use(verifyJWT)
-app.use('/employees', require('./routes/api/employees'))
-app.use('/users', require('./routes/api/users'))
+app.use('/employees', employeesRouter)
+app.use('/users', usersRouter)
 
 app.all('*', (req, res) => {
     res.status(404)

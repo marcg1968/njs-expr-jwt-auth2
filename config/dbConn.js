@@ -1,4 +1,7 @@
-const mongoose = require('mongoose')
+
+
+import mongoose from 'mongoose'
+import 'dotenv/config'
 
 const {
     MONGODB_DB,
@@ -6,11 +9,13 @@ const {
     MONGODB_PASS,
     MONGODB_USER,
 } = process.env
+
 const MONGO_URI = MONGODB_USER && MONGODB_PASS
     ? `mongodb+srv://${MONGODB_USER}:${MONGODB_PASS}@${MONGODB_HOST}/${MONGODB_DB}`
     : null
+// console.log(22, {MONGO_URI})
 
-const connectDB = async () => {
+export const connectDB = async () => {
     try {
         await mongoose.connect(MONGO_URI, {
             useUnifiedTopology: true,
@@ -20,5 +25,3 @@ const connectDB = async () => {
         console.error(err)
     }
 }
-
-module.exports = connectDB

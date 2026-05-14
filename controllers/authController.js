@@ -1,9 +1,14 @@
-const User = require('../model/User')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+
+
+import express from 'express'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import { User } from '../model/User.js'
+// import { RefreshToken } from '../models/refreshToken.js'
+
 
 // const handleLogin = async (req, res) => {
-const handleLogin = async (req, res, next) => {
+export const handleLogin = async (req, res, next) => {
     const { user, pwd } = req.body
     if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' })
 
@@ -63,4 +68,4 @@ const handleLogin = async (req, res, next) => {
     next()
 }
 
-module.exports = { handleLogin }
+// module.exports = { handleLogin }
