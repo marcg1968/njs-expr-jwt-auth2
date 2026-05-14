@@ -1,4 +1,5 @@
-// const User = require('../model/User')
+
+
 import fs from 'fs'
 import { User } from '../model/User.js'
 

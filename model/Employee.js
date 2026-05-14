@@ -13,5 +13,4 @@ const employeeSchema = new Schema({
     }
 })
 
-// module.exports = mongoose.model('Employee', employeeSchema)
 export const Employee = mongoose.model('Employee', employeeSchema)

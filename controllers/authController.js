@@ -6,8 +6,6 @@ import jwt from 'jsonwebtoken'
 import { User } from '../model/User.js'
 // import { RefreshToken } from '../models/refreshToken.js'
 
-
-// const handleLogin = async (req, res) => {
 export const handleLogin = async (req, res, next) => {
     const { user, pwd } = req.body
     if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' })
@@ -67,5 +65,3 @@ export const handleLogin = async (req, res, next) => {
     console.log(61, `*** MARKER ***`)
     next()
 }
-
-// module.exports = { handleLogin }

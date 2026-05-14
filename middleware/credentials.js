@@ -1,5 +1,3 @@
-// const allowedOrigins = require('../config/allowedOrigins');
-
 import { allowedOrigins } from '../config/allowedOrigins.js'
 
 export const credentials = (req, res, next) => {

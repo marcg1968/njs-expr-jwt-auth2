@@ -61,11 +61,3 @@ export const getEmployee = async (req, res) => {
     }
     res.json(employee)
 }
-
-// module.exports = {
-//     getAllEmployees,
-//     createNewEmployee,
-//     updateEmployee,
-//     deleteEmployee,
-//     getEmployee
-// }
