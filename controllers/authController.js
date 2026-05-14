@@ -23,7 +23,7 @@ export const handleLogin = async (req, res, next) => {
 
     /* evaluate password  */
     const match = await bcrypt.compare(pwd, foundUser.password)
-    console.log(17, match)
+    console.log(17, `pw match? ${match}`)
     if (match) {
         // const roles = Object.values(foundUser.roles).filter(Boolean)
 

@@ -11,6 +11,8 @@ import {
 
 const router = express.Router()
 
+// console.log(14, ROLES_LIST)
+
 router.route('/')
     .get(verifyRoles(ROLES_LIST.Admin), getAllUsers)
     .delete(verifyRoles(ROLES_LIST.Admin), deleteUser)
