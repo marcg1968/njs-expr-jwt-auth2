@@ -9,6 +9,7 @@ import { handleRefreshToken } from '../controllers/refreshTokenController.js'
 
 const router = express.Router()
 
+router.get('/', handleRefreshToken)
 router.post('/', handleRefreshToken)
 
 export const refreshRouter = router
