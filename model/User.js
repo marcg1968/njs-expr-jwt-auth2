@@ -1,6 +1,7 @@
 
 
 import mongoose, { Schema } from 'mongoose'
+import { Group } from './Group.js'
 
 // const userSchema = new Schema({
 //     username: {
@@ -28,7 +29,13 @@ const userSchema = new Schema(
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
-        refreshToken: { type: String }
+        refreshToken: { type: String },
+        groups: [{
+            type: Schema.Types.ObjectId,
+            // ref: 'Group', // References the 'Group' model
+            ref: Group, // References the 'Group' model
+            default: undefined,
+        }]
     },
     {
         timestamps: true, /* automatically adds and manages date fields: createdAt and updatedAt for every document */

@@ -3,13 +3,18 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import path from 'path'
 import { User } from '../model/User.js'
+import { Group } from '../model/Group.js'
+import { App } from '../model/App.js'
 // import { RefreshToken } from '../models/refreshToken.js'
 
-const {
-    dirname: __dirname,
-    filename: __filename,
-} = import.meta
+// const {
+//     dirname: __dirname,
+//     filename: __filename,
+// } = import.meta
+const { filename, } = import.meta
+const __filename = path.basename(filename)
 
 export const handleLogin = async (req, res, next) => {
     const { user, pwd } = req.body
@@ -17,13 +22,13 @@ export const handleLogin = async (req, res, next) => {
 
     // const foundUser = await User.findOne({ username: user }).exec()
     const foundUser = await User.findOne({ email: user }).exec()
-    if (!foundUser) return res.sendStatus(401); //Unauthorized
-
-    console.log(13, foundUser)
+    console.log(`${__filename}:20`, foundUser)
+    
+    if (!foundUser) return res.sendStatus(401) /* unauthorized */
 
     /* evaluate password  */
     const match = await bcrypt.compare(pwd, foundUser.password)
-    console.log(17, `pw match? ${match}`)
+    console.log(`${__filename}:26`, `pw match? ${match}`)
     if (match) {
         // const roles = Object.values(foundUser.roles).filter(Boolean)
 
@@ -50,7 +55,7 @@ export const handleLogin = async (req, res, next) => {
         /* Saving refreshToken with current user */
         foundUser.refreshToken = refreshToken
         const result = await foundUser.save()
-        console.log(42, result)
+        console.log(`${__filename}:53`, result)
         // console.log(roles)
 
         console.log(45, { refreshToken, accessToken })
@@ -67,6 +72,55 @@ export const handleLogin = async (req, res, next) => {
         res.sendStatus(401)
     }
 
-    console.log(`${__filename}:61`, `*** MARKER ***`)
+    /* temp hack to create app & group */
+    /*  */
+    try {        
+        const newApp = await App.create({
+            shortname: 'react-jwt-test2',
+            description: 'React/Vite Auth App',
+            urlOrigins: [ 'localhost:5173' ]
+        })
+        console.log(`${__filename}:78`, newApp)
+        console.log(`${__filename}:79`, newApp._id.toString())
+        // const newGroup = await Group.create({ name: 'Alice' })
+        const newGroup = await Group.create({
+            shortname: 'react-jwt-test2_admin',
+            description: ``,
+            apps: [
+                newApp._id
+            ]
+        })    
+        // await newGroup.populate('apps')
+        console.log(`${__filename}:88`, newGroup)
+        /* add user to group */
+        // newGroup.
+        foundUser.groups.push(newGroup._id)
+        await foundUser.save()
+
+        // doc.myArray.push(newItem);
+        // await doc.save();
+        // await doc.populate('myArray'); // In newer Mongoose versions, this updates 'doc' in place
+
+    }
+    catch (err) {
+        console.error(`${__filename}:97`, err)
+    }
+
+    /* check if user in group allowed to access the app */
+    const {
+        origin,
+        'auth-app-name': appNameHeader,
+    } = req.headers
+    if (appNameHeader) {
+        
+}
+    else {
+        res
+            .json({ err: `app name custom header missing` })
+            .status(401)
+    }
+
+
+    console.log(`${__filename}:70`, `*** MARKER ***`)
     next()
 }
