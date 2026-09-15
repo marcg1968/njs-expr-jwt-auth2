@@ -8,7 +8,7 @@ const appSchema = new Schema({
         required: true,
         unique: true,
     },
-    description: {
+    descrip: {
         type: String,
         required: false,
     },

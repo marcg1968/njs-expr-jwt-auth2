@@ -8,6 +8,9 @@ export const allowedOrigins = [
     'http://localhost:3456',
     'http://localhost:5173',
     'http://localhost:5174',
+    'http://localhost:6621',
+    'http://localhost:6782',
+    'http://localhost:6842',
 ]
 
 export const allowedApps = [

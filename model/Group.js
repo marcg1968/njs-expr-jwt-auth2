@@ -9,14 +9,14 @@ const groupSchema = new Schema({
         required: true,
         unique: true,
     },
-    description: {
+    descrip: {
         type: String,
         required: false,
-        unique: true,
+        unique: false,
     },
     apps: [{
         type: Schema.Types.ObjectId,
-        ref: App, // References the 'Group' model
+        ref: App, // References the 'App' model
         default: undefined,
     }],
 })

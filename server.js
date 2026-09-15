@@ -20,6 +20,7 @@ import { employeesRouter } from './routes/api/employees.js'
 import { usersRouter } from './routes/api/users.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { catchall } from './middleware/catchall.js'
+import { resetPasswdRouter } from './routes/reset.js'
 
 const { dirname: __dirname } = import.meta
 
@@ -53,6 +54,7 @@ const main = async () => {
     /* routes */
     app.use('/', rootRouter)
     app.use('/register', registerRouter)
+    app.use('/reset_pw', resetPasswdRouter)
     app.use('/auth', authRouter)
     app.use('/refresh', refreshRouter)
     app.use('/logout', logoutRouter)

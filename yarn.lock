@@ -17,6 +17,7 @@ __metadata:
     express: "npm:^4.17.1"
     jsonwebtoken: "npm:^8.5.1"
     mongoose: "npm:^6.0.11"
+    nodemailer: "npm:^9.1.0"
     nodemon: "npm:^2.0.12"
     uuid: "npm:^8.3.2"
   languageName: unknown
@@ -2339,6 +2340,13 @@ __metadata:
   bin:
     node-gyp: bin/node-gyp.js
   checksum: 10c0/424077bc9e9bbe953a8e86db473ba818cbc6a121714008c977fd589e21e5f0c811fbf22faac730dc7182450b5e52df301811d01ae3373898658d999b7710f4e6
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "nodemailer@npm:9.1.0"
+  checksum: 10c0/4e5e84e7477fdca96c0f618c4647307c6fa382b31b3cd430a61eb4d62b792ec2f5461f62c53b0ebb5ae34393074f4d1a8d8fd0a95389f18e209a9dd12980d312
   languageName: node
   linkType: hard
 
