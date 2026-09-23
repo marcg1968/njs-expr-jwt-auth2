@@ -42,6 +42,9 @@ export const handleRefreshToken = async (req, res) => {
         {
             'UserInfo': {
                 username: email,
+                email: foundUser.email,
+                fname: foundUser.fname,
+                sname: foundUser.sname,
                 groups,
             }
         },

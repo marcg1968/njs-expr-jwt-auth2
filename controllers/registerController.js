@@ -119,7 +119,12 @@ export const handleNewUser = async (req, res) => {
             passwd: '', /* needs to be empty initially */
         })
         console.log(120, result)
-        res.status(201).json({ 'success': `New user ${email} created!` })
+        // res.status(201).json({ 'success': `New user ${email} created!` })
+        res.status(201).json({
+            result: 0,
+            email,
+            message: `New user ${email} created!`,
+        })
     }
     catch (err) {
         res.status(500).json({ 'message': err.message })
