@@ -107,9 +107,12 @@ export const handleLogin = async (req, res, next) => {
         /* create JWTs */
         const accessToken = jwt.sign(
             {
-                "UserInfo": {
-                    "username": foundUser.username,
+                UserInfo: {
+                    username: foundUser.email,
+                    email: foundUser.email,
                     // "roles": roles
+                    fname: foundUser.fname,
+                    sname: foundUser.sname,
                 }
             },
             process.env.ACCESS_TOKEN_SECRET,
@@ -117,11 +120,17 @@ export const handleLogin = async (req, res, next) => {
             { expiresIn: '90s' }
         )
         const refreshToken = jwt.sign(
-            // { "username": foundUser.username },
-            { "username": foundUser.email },
+            // // { "username": foundUser.username },
+            // { "username": foundUser.email },
+            {
+                username: foundUser.email,
+                email: foundUser.email,
+                fname: foundUser.fname,
+                sname: foundUser.sname,
+            },
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: '1d' }
-        )
+        )   
 
         /* TODO: use separate collection for refresh tokens */
         /* Saving refreshToken with current user */
@@ -141,8 +150,8 @@ export const handleLogin = async (req, res, next) => {
 
         /* Send authorization roles and access token to user */
         // res.json({ roles, accessToken })
-        res.json({ accessToken, groups })
-
+        const { fname, sname } = foundUser
+        res.json({ accessToken, groups, email, fname, sname })
     } 
     else {
         res.sendStatus(401)
