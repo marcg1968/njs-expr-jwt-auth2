@@ -58,7 +58,7 @@ const main = async () => {
     app.use('/auth', authRouter)
     app.use('/refresh', refreshRouter)
     app.use('/logout', logoutRouter)
-    app.use(verifyJWT)
+    // app.use(verifyJWT) /* ??? necessary ??? */
     app.use('/employees', employeesRouter)
     app.use('/users', usersRouter)
 

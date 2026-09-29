@@ -6,13 +6,14 @@ import { Group } from '../model/Group.js'
 import { App } from '../model/App.js'
 
 export const getAllUsers = async (req, res) => {
-    const users = await User.find()
+    // const users = await User.find()
+    const users = await User.find().select('-passwd')
     if (!users) return res.status(204).json({ 'message': 'No users found' })
     res.json(users)
 }
 
 export const deleteUser = async (req, res) => {
-    if (!req?.body?.id) return res.status(400).json({ "message": 'User ID required' })
+    if (!req?.body?.id) return res.status(400).json({ 'message': 'User ID required' })
     const user = await User.findOne({ _id: req.body.id }).exec()
     if (!user) {
         return res.status(204).json({ 'message': `User ID ${req.body.id} not found` })
@@ -22,10 +23,15 @@ export const deleteUser = async (req, res) => {
 }
 
 export const getUser = async (req, res) => {
-    if (!req?.params?.id) return res.status(400).json({ "message": 'User ID required' })
-    const user = await User.findOne({ _id: req.params.id }).exec()
+    // if (!req?.params?.id) return res.status(400).json({ 'message': 'User ID required' })
+    const { email, } = req.body
+    if (!email)
+        return res.status(400).json({ 'message': 'email is required.' })
+
+    // const user = await User.findOne({ email }).exec()
+    const user = await User.findOne({ email }) .select('-passwd').exec()
     if (!user) {
-        return res.status(204).json({ 'message': `User ID ${req.params.id} not found` })
+        return res.status(204).json({ 'message': `User email ${email} not found` })
     }
     res.json(user)
 }
@@ -48,3 +54,33 @@ export const findUserWithGroupsForApp = async ({ email, app_name_header }) => {
         })
 
 }
+
+export const updateUser = async (req, res) => {
+    const { app_name_header } = res.locals
+
+    const { email, fname, sname, groups, } = req.body
+    if (!email)
+        return res.status(400).json({ 'message': 'email is required.' })
+
+    const updatedUser = await User.findOneAndUpdate(
+        { email },
+        { $set: { reset_otp: null, nonce: null, fname, sname, groups } },
+        { new: true }
+    )
+    console.log(70, updatedUser)
+    res.json({...updateUser})
+}
+
+export const getUserGroups = async (req, res) => {
+    const { app_name_header } = res.locals
+
+    const groups = await Group.find()
+        .select('-apps')
+            .populate({
+                path: 'apps',
+                match: { shortname: `${app_name_header}` },   // <-- filter here
+                model: App,
+            })
+    return res.json({ groups })
+}
+
