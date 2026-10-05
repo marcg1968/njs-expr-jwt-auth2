@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken'
 import path from 'path'
 import { randomBytes } from 'node:crypto'
 import util from 'node:util'
-import { fileURLToPath } from 'url'
+// import { fileURLToPath } from 'url'
 import { User } from '../model/User.js'
 import { Group } from '../model/Group.js'
 import { App } from '../model/App.js'
@@ -21,7 +21,7 @@ import { removeNonceAndGenerateResetOTP } from './resetPwController.js'
 // } = import.meta
 // const { filename, } = import.meta
 // const __filename = path.basename(filename)
-const __filename = path.basename(fileURLToPath(import.meta.url))
+const __filename = path.basename(import.meta.filename)
 
 export const handleLogin = async (req, res, next) => {
     let foundUser
