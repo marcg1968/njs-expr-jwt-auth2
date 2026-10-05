@@ -5,7 +5,7 @@ const __dirname = import.meta.dirname
 export const catchall = (req, res) => {
     res.status(404)
     if (req.accepts('html')) {
-        res.sendFile(path.join(__dirname, 'views', '404.html'))
+        res.sendFile(path.join(__dirname, '..', 'views', '404.html'))
     }
     else if (req.accepts('json')) {
         res.json({ error: '404 Not Found' })
