@@ -1,4 +1,4 @@
-
+import path from 'path'
 
 export const catchall = (req, res) => {
     res.status(404)
