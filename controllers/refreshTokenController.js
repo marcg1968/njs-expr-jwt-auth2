@@ -1,12 +1,12 @@
 import express from 'express'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import util from 'node:util'
 import jwt from 'jsonwebtoken'
 import { User } from '../model/User.js'
 import { findUserWithGroupsForApp } from './usersController.js'
 
-const { filename, } = import.meta
-const __filename = path.basename(filename)
+const __filename = path.basename(fileURLToPath(import.meta.url))
 
 export const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies

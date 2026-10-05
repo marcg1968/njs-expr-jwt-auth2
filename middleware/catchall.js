@@ -1,4 +1,7 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = path.basename(fileURLToPath(import.meta.url))
 
 export const catchall = (req, res) => {
     res.status(404)
