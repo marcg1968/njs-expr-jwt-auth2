@@ -70,6 +70,7 @@ const main = async () => {
     /* deliver 404 customised */
     app.all('*', catchall)
 
+    /* logs errors */
     app.use(errorHandler)
 
     app.listen(PORT, () => console.log(`Express.JS server is active on http://localhost:${PORT}`))

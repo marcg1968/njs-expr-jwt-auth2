@@ -2,25 +2,25 @@
 
 import path from 'path'
 import { allowedOrigins } from '../config/allowedOrigins.js'
-import { fileURLToPath } from 'url'
 
-// const { filename, } = import.meta
-// const __filename = path.basename(filename)
-const __filename = path.basename(fileURLToPath(import.meta.url))
+const __filename = path.basename(import.meta.filename)
 
 export const credentials = (req, res, next) => {
-    // const origin = req.headers.origin
     const {
         origin,
         'auth-app-name': appNameHeader,
     } = req.headers
-    // const appNameHeader = req.get('Auth-App-Name')
-    console.log(`${__filename}:16`, { appNameHeader })
+    // console.log(15, `[${__filename}]`, { appNameHeader })
     res.locals.app_name_header = appNameHeader
 
+    if (!allowedOrigins.includes(origin)) {
+        console.warn(17, `[${__filename}]`, `origin ${origin} missing from allowedOrigins`)
+    }
+    
     if (allowedOrigins.includes(origin)) {
-        console.log(9, { origin })
+        // console.log(20, `[${__filename}]`, { origin })
         res.header('Access-Control-Allow-Credentials', true)
     }
+
     next()
 }
