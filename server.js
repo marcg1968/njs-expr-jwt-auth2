@@ -21,6 +21,7 @@ import { usersRouter } from './routes/api/users.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { catchall } from './middleware/catchall.js'
 import { resetPasswdRouter } from './routes/reset.js'
+import { turnstileRouter } from './routes/turnstile.js'
 
 const { dirname: __dirname } = import.meta
 
@@ -61,6 +62,7 @@ const main = async () => {
     // app.use(verifyJWT) /* ??? necessary ??? */
     app.use('/employees', employeesRouter)
     app.use('/users', usersRouter)
+    app.use('/turnstile', turnstileRouter) /* cloudflare */
 
     // app.all('*', (req, res) => {
     //     res.status(404)
