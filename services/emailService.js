@@ -10,13 +10,13 @@ const {
     SMTP_PORT,
 } = process.env
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.NOTIFY_EMAIL,
-        pass: process.env.NOTIFY_PASS
-    }
-})
+// const transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//         user: process.env.NOTIFY_EMAIL,
+//         pass: process.env.NOTIFY_PASS
+//     }
+// })
 
 const smtpTransport = nodemailer.createTransport({
     host: SMTP_HOST,
@@ -28,18 +28,22 @@ const smtpTransport = nodemailer.createTransport({
     }
 })
 
-export const sendResetPwLink = async ({ email, fname, sname, reset_otp,  origin, token }) => {
+export const sendResetPwLink = async ({ email, fname, sname, reset_otp,  origin, token, expiresIn }) => {
 
     console.log(33, `sending email pw reset link: \n${origin}/verify/${token}\n`)
 
     // await transporter.sendMail({
     const emailBodyText = `Hi ${fname} ${sname},
 
-Here is the link to reset your password:
+We received a request to reset the password for your account at ${origin}.
+
+If you made this request, click the secure link below to reset your password. 
 
 ${origin}/verify/${token}
 
-This link is valid for NNN minutes.
+This link expires in ${expiresIn} and can only be used once.
+
+If this was not you, please ignore this email. Your current password remains unchanged, and no further action is needed.
 
 `
     await smtpTransport.sendMail({

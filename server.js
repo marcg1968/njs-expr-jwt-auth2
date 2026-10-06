@@ -22,6 +22,7 @@ import { errorHandler } from './middleware/errorHandler.js'
 import { catchall } from './middleware/catchall.js'
 import { resetPasswdRouter } from './routes/reset.js'
 import { turnstileRouter } from './routes/turnstile.js'
+import { limiter } from './middleware/rateLimit.js'
 
 const { dirname: __dirname } = import.meta
 
@@ -52,6 +53,8 @@ const main = async () => {
     /* middleware for cookies */
     app.use(cookieParser())
 
+    app.use(limiter)
+
     /* routes */
     app.use('/', rootRouter)
     app.use('/register', registerRouter)
@@ -64,17 +67,7 @@ const main = async () => {
     app.use('/users', usersRouter)
     app.use('/turnstile', turnstileRouter) /* cloudflare */
 
-    // app.all('*', (req, res) => {
-    //     res.status(404)
-    //     if (req.accepts('html')) {
-    //         res.sendFile(path.join(__dirname, 'views', '404.html'))
-    //     } else if (req.accepts('json')) {
-    //         res.json({ "error": "404 Not Found" })
-    //     } else {
-    //         res.type('txt').send("404 Not Found")
-    //     }
-    // })
-
+    /* deliver 404 customised */
     app.all('*', catchall)
 
     app.use(errorHandler)

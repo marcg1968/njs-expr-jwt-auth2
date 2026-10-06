@@ -13,6 +13,7 @@ import { App } from '../model/App.js'
 import { sendResetPwLink } from '../services/emailService.js'
 import { findUserWithGroupsForApp } from './usersController.js'
 import { removeNonceAndGenerateResetOTP } from './resetPwController.js'
+import ms from 'ms'
 // import { RefreshToken } from '../models/refreshToken.js'
 
 // const {
@@ -86,12 +87,13 @@ export const handleLogin = async (req, res, next) => {
         )
 
         // console.log(54, { ...foundUser.toObject() })
-        await sendResetPwLink({ ...foundUser.toObject(), token, origin }) // { email, fname, sname, reset_otp, origin, protocol }
+        await sendResetPwLink({ ...foundUser.toObject(), token, origin, expiresIn }) // { email, fname, sname, reset_otp, origin, protocol }
         return res.json({
             // msg: `sent email for pw reset`
             status: 'pw_reset',
             action: 'email_sent',
             expiresIn, 
+            expiresInFull: ms(ms(expiresIn), { long: true }), 
         })
     }
     

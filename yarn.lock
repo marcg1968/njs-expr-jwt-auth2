@@ -1483,7 +1483,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:4.x":
+"debug@npm:4, debug@npm:4.x, debug@npm:^4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -1647,6 +1647,18 @@ __metadata:
   version: 3.1.3
   resolution: "exponential-backoff@npm:3.1.3"
   checksum: 10c0/77e3ae682b7b1f4972f563c6dbcd2b0d54ac679e62d5d32f3e5085feba20483cf28bd505543f520e287a56d4d55a28d7874299941faf637e779a1aa5994d1267
+  languageName: node
+  linkType: hard
+
+"express-rate-limit@npm:^8.7.1":
+  version: 8.7.1
+  resolution: "express-rate-limit@npm:8.7.1"
+  dependencies:
+    debug: "npm:^4.4.3"
+    ip-address: "npm:^10.2.0"
+  peerDependencies:
+    express: ">= 4.11"
+  checksum: 10c0/575afb52d84242325450794ff2dc4fbe6e913e081fe6fe857541201b7c159661a9a7d5ac7573679b68b67bf9af8f0205b9539777373ad34617814dc6057a6b3b
   languageName: node
   linkType: hard
 
@@ -2055,6 +2067,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ip-address@npm:^10.2.0":
+  version: 10.7.3
+  resolution: "ip-address@npm:10.7.3"
+  checksum: 10c0/145d9848f315a0375437d206dee763e2dd654063e8c5d6270a329e249cfad30b4ae760b237bb1991abfe67276f542310a89fca891ddf76f934e397e0dda1bf3b
+  languageName: node
+  linkType: hard
+
 "ipaddr.js@npm:1.9.1":
   version: 1.9.1
   resolution: "ipaddr.js@npm:1.9.1"
@@ -2423,8 +2442,10 @@ __metadata:
     date-fns: "npm:^2.23.0"
     dotenv: "npm:^10.0.0"
     express: "npm:^4.17.1"
+    express-rate-limit: "npm:^8.7.1"
     jsonwebtoken: "npm:^8.5.1"
     mongoose: "npm:^6.0.11"
+    ms: "npm:^2.1.3"
     nodemailer: "npm:^9.1.0"
     nodemon: "npm:^2.0.12"
     uuid: "npm:^8.3.2"
