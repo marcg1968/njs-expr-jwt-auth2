@@ -54,6 +54,18 @@ export const handleLogin = async (req, res, next) => {
     // console.log(`${__filename}:55`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
     console.warn(55, `[${__filename}]`, `foundUser:`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
 
+    /* if email is invalid, i.e. no user found */
+    /* don't confirm the user doesn't exist, generate a valid response but no email is sent */
+    console.warn(59, `[${__filename}]`, `email addr supplied probably invalid, sending valid response anyway... `)
+    if (!foundUser) {
+        return res.json({
+            status: 'pw_reset',
+            action: 'email_sent',
+            expiresIn, 
+            expiresInFull: ms(ms(expiresIn), { long: true }), 
+        })
+    }
+
     /* if no password AND no reset_otp, remove any nonce and generate new reset_otp */
     /* UP TO HERE !!!!!!!!!!!!!!!!! */
 

@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import ms from 'ms'
 import nodemailer from 'nodemailer'
 
 const {
@@ -32,18 +33,22 @@ export const sendResetPwLink = async ({ email, fname, sname, reset_otp,  origin,
 
     console.log(33, `sending email pw reset link: \n${origin}/verify/${token}\n`)
 
+    const expiresInFull = ms(ms(expiresIn), { long: true })
+
     // await transporter.sendMail({
     const emailBodyText = `Hi ${fname} ${sname},
 
 We received a request to reset the password for your account at ${origin}.
 
-If you made this request, click the secure link below to reset your password. 
+If you made this request, copy and paste the secure link below into your browser to reset your password:
 
 ${origin}/verify/${token}
 
-This link expires in ${expiresIn} and can only be used once.
+This link expires in ${expiresInFull} and can only be used once.
 
-If this was not you, please ignore this email. Your current password remains unchanged, and no further action is needed.
+If this was not you, please ignore this email. 
+
+Your current password remains unchanged, and no further action is needed.
 
 `
     await smtpTransport.sendMail({
