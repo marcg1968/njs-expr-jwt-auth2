@@ -2,7 +2,7 @@
 // router.get('/', refreshTokenController.handleRefreshToken)
 
 import express from 'express'
-import path from 'path'
+// import path from 'path'
 import { handleRefreshToken } from '../controllers/refreshTokenController.js'
 
 // const { dirname: __dirname } = import.meta

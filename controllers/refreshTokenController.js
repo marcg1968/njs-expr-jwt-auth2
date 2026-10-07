@@ -3,7 +3,7 @@ import path from 'path'
 // import { fileURLToPath } from 'url'
 import util from 'node:util'
 import jwt from 'jsonwebtoken'
-import { User } from '../model/User.js'
+// import { User } from '../model/User.js'
 import { findUserWithGroupsForApp } from './usersController.js'
 
 // const __filename = path.basename(fileURLToPath(import.meta.url))
@@ -13,7 +13,10 @@ const __dirname = import.meta.dirname
 export const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies
     console.log(6, cookies)
+
+    /* no jwt cookie so return 401 */
     if (!cookies?.jwt) return res.sendStatus(401)
+    
     const refreshToken = cookies.jwt
 
     const { app_name_header } = res.locals
