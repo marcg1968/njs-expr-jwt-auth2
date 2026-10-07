@@ -6,7 +6,6 @@ import jwt from 'jsonwebtoken'
 import path from 'path'
 import { randomBytes } from 'node:crypto'
 import util from 'node:util'
-// import { fileURLToPath } from 'url'
 import { User } from '../model/User.js'
 import { Group } from '../model/Group.js'
 import { App } from '../model/App.js'
@@ -16,12 +15,6 @@ import { removeNonceAndGenerateResetOTP } from './resetPwController.js'
 import ms from 'ms'
 // import { RefreshToken } from '../models/refreshToken.js'
 
-// const {
-//     dirname: __dirname,
-//     filename: __filename,
-// } = import.meta
-// const { filename, } = import.meta
-// const __filename = path.basename(filename)
 const __filename = path.basename(import.meta.filename)
 
 export const handleLogin = async (req, res, next) => {
@@ -58,14 +51,15 @@ export const handleLogin = async (req, res, next) => {
     //     })
 
     foundUser = await findUserWithGroupsForApp({ email, app_name_header })
-    // console.log(`${__filename}:27`, foundUser)
-    console.log(`${__filename}:55`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
+    // console.log(`${__filename}:55`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
+    console.warn(55, `[${__filename}]`, `foundUser:`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
 
     /* if no password AND no reset_otp, remove any nonce and generate new reset_otp */
     /* UP TO HERE !!!!!!!!!!!!!!!!! */
 
     foundUser = await removeNonceAndGenerateResetOTP({ email })
-    console.log(`${__filename}:64`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
+    // console.log(`${__filename}:64`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
+    console.warn(62, `[${__filename}]`, `foundUser:`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
 
     // const reset_otp = randomBytes(48).toString('hex')
     // console.log(60, `${reset_otp}`)
@@ -104,7 +98,18 @@ export const handleLogin = async (req, res, next) => {
 
     /* evaluate password  */
     const match = await bcrypt.compare(pwd, foundUser.passwd)
-    console.log(`${__filename}:26`, `pw match? ${match}`)
+    // console.log(`${__filename}:26`, `pw match? ${match}`)
+    console.warn(102, `[${__filename}]`, `pw match? ${match}`)
+    if (!match) {
+        res
+            .status(400)
+            .json({
+                success: false,
+                message: `password incorrect`,
+                messageCode: 400,
+            })
+        return next()
+    }
     if (match) {
         // const roles = Object.values(foundUser.roles).filter(Boolean)
 
@@ -157,9 +162,9 @@ export const handleLogin = async (req, res, next) => {
         const { fname, sname } = foundUser
         res.json({ accessToken, groups, email, fname, sname })
     } 
-    else {
-        res.sendStatus(401)
-    }
+    // else {
+    //     res.sendStatus(401)
+    // }
 
     /* temp hack to create app & group */
     // try {        
