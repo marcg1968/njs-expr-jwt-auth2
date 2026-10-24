@@ -192,7 +192,8 @@ export const startPwReset = async (req, res, next) => {
         return next() /* will move to handleInvalidCredentials */
     }
 
-    if (foundUser?.reset_otp && !foundUser?.passwd) {
+    // if (foundUser?.reset_otp && !foundUser?.passwd) {
+    if (foundUser?.reset_otp) {
     
         const token = jwt.sign(
             {
