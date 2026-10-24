@@ -1,10 +1,12 @@
-import express from 'express'
-import bcrypt from 'bcrypt'
+// import express from 'express'
+// import bcrypt from 'bcrypt'
 import { randomBytes } from 'node:crypto'
-
+import path from 'path'
 import { User } from '../model/User.js'
 import { Group } from '../model/Group.js'
 import { App } from '../model/App.js'
+
+const __filename = path.basename(import.meta.filename)
 
 /* 
 curl -X POST http://localhost:6823/register \
@@ -23,12 +25,13 @@ export const handleNewUser = async (req, res) => {
         return res.sendStatus(409) // conflict
     }
 
-    console.log(26, `res.locals`, res.locals)
+    // console.log(26, `res.locals`, res.locals)
+    console.warn(29, `[${__filename}]`, `res.locals`, res.locals)
     const { app_name_header } = res.locals
 
     /* generate a hash to use for setting pw */
     const reset_otp =  randomBytes(48).toString('hex')
-    console.log(30, `${reset_otp}`)
+    console.warn(29, `[${__filename}]`, `reset_otp: ${reset_otp}`)
 
     // try {
     //     //encrypt the password
@@ -89,7 +92,7 @@ export const handleNewUser = async (req, res) => {
     //     res.status(500).json({ 'message': err.message })
     // }
 
-    let dummy_group, app
+    let dummy_group, app, success = false
     try {
         /* get app */
         app = await App.findOne({ shortname: app_name_header })
@@ -118,9 +121,11 @@ export const handleNewUser = async (req, res) => {
             ],
             passwd: '', /* needs to be empty initially */
         })
+        success = true
         console.log(120, result)
         // res.status(201).json({ 'success': `New user ${email} created!` })
         res.status(201).json({
+            success,
             result: 0,
             email,
             message: `New user ${email} created!`,
@@ -129,7 +134,6 @@ export const handleNewUser = async (req, res) => {
     catch (err) {
         res.status(500).json({ 'message': err.message })
     }
-
 }
 
 /* 
@@ -173,10 +177,14 @@ export const createGroup = async (req, res) => {
         })
         console.log(65, `Group created: `)
         console.log(66, result)
-        res.status(201).json({ 'success': `New group ${name} created!` })
+        // res.status(201).json({ 'success': `New group ${name} created!` })
+        res.status(201).json({
+            success: true,
+            result: `New group ${name} created!`,
+        })
     }
     catch (err) {
         console.error(70, err)
-        return res.status(500).json({ 'message': err.message })
+        return res.status(500).json({ success: false, 'message': err.message })
     }
 }

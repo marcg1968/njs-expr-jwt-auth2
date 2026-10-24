@@ -4,12 +4,15 @@ import { randomBytes } from 'node:crypto'
 import jwt from 'jsonwebtoken'
 import path from 'path'
 import util from 'node:util'
+import ms from 'ms'
 import { User } from '../model/User.js'
 import { Group } from '../model/Group.js'
 import { App } from '../model/App.js'
+import { sendResetPwLink } from '../services/emailService.js'
 
-const { filename, } = import.meta
-const __filename = path.basename(filename)
+const __filename = path.basename(import.meta.filename)
+
+const expiresIn = '300s'
 
 const encryptPw = async pwd => await bcrypt.hash(pwd, 10)
 
@@ -168,4 +171,53 @@ export const setNewPw = async (req, res) => {
     // res.json({ fooody: 'BAR!', nonce })
     res.json({ resultCode: 0, resultMsg: `updated user!` })
 
+}
+
+export const startPwReset = async (req, res, next) => {
+    let foundUser
+    const { email } = req.body
+    const { origin, host } = req.headers
+    const { protocol } = req
+    const port = host.includes(':') ? host.split(':')[1] : null
+    if (!email) return res.status(400).json({ 'message': ' email addr required.' })
+
+    const { app_name_header } = res.locals
+
+    // foundUser = await findUserWithGroupsForApp({ email, app_name_header })
+    foundUser = await removeNonceAndGenerateResetOTP({ email })
+    console.warn(184, `[${__filename}]`, `foundUser:`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
+
+    if (!foundUser) {
+        res.locals.invalid_credentials = true
+        return next() /* will move to handleInvalidCredentials */
+    }
+
+    if (foundUser?.reset_otp && !foundUser?.passwd) {
+    
+        const token = jwt.sign(
+            {
+                otp: foundUser.reset_otp,
+                email: foundUser.email,
+            },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn }
+        )
+
+        await sendResetPwLink({ ...foundUser.toObject(), token, origin, expiresIn }) // { email, fname, sname, reset_otp, origin, protocol }
+        return res.json({
+            // msg: `sent email for pw reset`
+            success: true,
+            status: 'pw_reset',
+            action: 'email_sent',
+            expiresIn, 
+            expiresInFull: ms(ms(expiresIn), { long: true }), 
+        })
+    }
+
+    // if (!foundUser) return res.sendStatus(401) /* unauthorized */
+    if (!foundUser || !foundUser?.passwd) {
+        return res.sendStatus(401) /* unauthorized */
+    }
+
+    res.json({ interim: true })
 }

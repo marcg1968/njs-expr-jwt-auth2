@@ -1,22 +1,120 @@
 
 
-import express from 'express'
+// import express from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import path from 'path'
-import { randomBytes } from 'node:crypto'
+// import { randomBytes } from 'node:crypto'
 import util from 'node:util'
-import { User } from '../model/User.js'
-import { Group } from '../model/Group.js'
-import { App } from '../model/App.js'
+import ms from 'ms'
+// import { User } from '../model/User.js'
+// import { Group } from '../model/Group.js'
+// import { App } from '../model/App.js'
 import { sendResetPwLink } from '../services/emailService.js'
 import { findUserWithGroupsForApp } from './usersController.js'
 import { removeNonceAndGenerateResetOTP } from './resetPwController.js'
-import ms from 'ms'
 // import { RefreshToken } from '../models/refreshToken.js'
 
 const __filename = path.basename(import.meta.filename)
 
+export const handleInvalidCredentials = (req, res, next) => {
+    if (res.locals.invalid_credentials) {
+        return res
+            .status(400)
+            .json({
+                success: false,
+                message: `username/password credentials incorrect`,
+                messageCode: 400,
+            })
+    }
+    next()
+}
+
+export const handleLogin2 = async (req, res, next) => {
+    let foundUser
+    const { email, pwd } = req.body
+    const { origin, host } = req.headers
+    const { protocol } = req
+    const port = host.includes(':') ? host.split(':')[1] : null
+    if (!email || !pwd) return res.status(400).json({ 'message': 'Credentials (email and password) are required.' })
+
+    const { app_name_header } = res.locals
+
+    foundUser = await findUserWithGroupsForApp({ email, app_name_header })
+    console.warn(42, `[${__filename}]`, `foundUser:`, util.inspect(foundUser, { showHidden: false, depth: null, colors: true }))
+
+    /* if email is invalid, i.e. no user found */
+    /* don't confirm the user doesn't exist, generate a valid response but no email is sent */
+    console.warn(59, `[${__filename}]`, `email addr supplied probably invalid `)
+    if (!foundUser) {
+        res.locals.invalid_credentials = true
+        return next() /* will move to handleInvalidCredentials */
+    }
+
+    /* if reached here, there was a foundUser */
+    /* evaluate password  */
+    const match = await bcrypt.compare(pwd, foundUser.passwd)
+    console.warn(58, `[${__filename}]`, `pw match? ${match}`)
+    if (!match) {
+        res.locals.invalid_credentials = true
+        return next() /* will move to handleInvalidCredentials */
+    }
+    if (match) {
+        // const roles = Object.values(foundUser.roles).filter(Boolean)
+
+        /* create JWTs */
+        const accessToken = jwt.sign(
+            {
+                UserInfo: {
+                    username: foundUser.email,
+                    email: foundUser.email,
+                    // "roles": roles
+                    fname: foundUser.fname,
+                    sname: foundUser.sname,
+                }
+            },
+            process.env.ACCESS_TOKEN_SECRET,
+            // { expiresIn: '10s' }
+            { expiresIn: '90s' }
+        )
+        const refreshToken = jwt.sign(
+            // // { "username": foundUser.username },
+            // { "username": foundUser.email },
+            {
+                username: foundUser.email,
+                email: foundUser.email,
+                fname: foundUser.fname,
+                sname: foundUser.sname,
+            },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: '1d' }
+        )   
+
+        /* TODO: use separate collection for refresh tokens */
+        /* Saving refreshToken with current user */
+        foundUser.refreshToken = refreshToken
+        const result = await foundUser.save()
+        console.log(`${__filename}:105`, util.inspect(result, { showHidden: false, depth: null, colors: true }))
+        // console.log(roles)
+
+        /* collect group info */
+        // const { groups } = foundUser
+        const groups = (foundUser?.groups || []).map(({ _id, shortname, descrip }) => ({ _id, shortname, descrip }))
+
+        console.log(112, { refreshToken, accessToken, groups })
+
+        /* Creates Secure Cookie with refresh token */
+        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
+
+        /* Send authorization roles and access token to user */
+        // res.json({ roles, accessToken })
+        const { fname, sname } = foundUser
+        res.json({ accessToken, groups, email, fname, sname })
+    } 
+
+}
+
+/* DEPRECATED in favour of splitting the two login from reset_pw */
 export const handleLogin = async (req, res, next) => {
     let foundUser
     // const { user, pwd } = req.body
@@ -117,7 +215,7 @@ export const handleLogin = async (req, res, next) => {
             .status(400)
             .json({
                 success: false,
-                message: `password incorrect`,
+                message: `username/password credentials incorrect`,
                 messageCode: 400,
             })
         return next()
