@@ -13,8 +13,11 @@ export const credentials = (req, res, next) => {
     // console.log(15, `[${__filename}]`, { appNameHeader })
     res.locals.app_name_header = appNameHeader
 
+    const userAgent = req.headers['user-agent']
+    const IP = req.ip
+
     if (!allowedOrigins.includes(origin)) {
-        console.warn(17, `[${__filename}]`, `origin ${origin} missing from allowedOrigins`)
+        console.warn(17, `[${__filename}]`, `origin [${origin}] missing from allowedOrigins, user-agent = ${userAgent}, IP = ${IP}`)
     }
     
     if (allowedOrigins.includes(origin)) {
